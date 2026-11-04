@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>Cuaderno — Blog</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f3ed;
+      --surface: #fffefa;
+      --ink: #20251f;
+      --muted: #777a70;
+      --line: #e5e2d9;
+      --green: #355d45;
+      --green-dark: #284735;
+      --accent: #d7e4c6;
+      --serif: Georgia, "Times New Roman", serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+    .topbar { height: 78px; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: inline-flex; gap: 10px; align-items: center; color: var(--ink); text-decoration: none; font: 700 22px var(--serif); letter-spacing: -.5px; }
+    .brand-mark { width: 30px; height: 30px; display: grid; place-items: center; background: var(--green); color: white; border-radius: 50% 50% 50% 8px; font: 16px var(--serif); }
+    .nav-right { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 13px; }
+    .user-name { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .button { border: 0; border-radius: 999px; padding: 11px 18px; background: var(--green); color: #fff; font-weight: 650; transition: background .18s, transform .18s; }
+    .button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .button:disabled { opacity: .6; cursor: wait; transform: none; }
+    .button.secondary { background: transparent; color: var(--green); border: 1px solid #c9d3c5; }
+    .button.secondary:hover { background: #edf1e8; }
+    .button.text-button { padding: 8px 0; color: var(--muted); background: transparent; font-size: 13px; }
+    .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; padding: 72px 0 62px; border-bottom: 1px solid var(--line); }
+    .eyebrow { margin: 0 0 15px; color: var(--green); text-transform: uppercase; letter-spacing: 2px; font-size: 11px; font-weight: 750; }
+    h1 { max-width: 620px; margin: 0; font: 500 clamp(42px, 6vw, 72px)/.99 var(--serif); letter-spacing: -3px; }
+    .hero-copy { max-width: 510px; margin: 22px 0 0; color: var(--muted); font: 17px/1.7 var(--serif); }
+    .hero-note { position: relative; min-height: 205px; padding: 28px 30px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; background: #e5eadc; border-radius: 4px 72px 4px 4px; }
+    .hero-note::after { content: "✳"; position: absolute; right: 24px; bottom: -48px; color: #c4d2b7; font-size: 190px; line-height: 1; }
+    .hero-note p, .hero-note span { position: relative; z-index: 1; }
+    .hero-note p { max-width: 320px; margin: 0; font: 25px/1.35 var(--serif); }
+    .hero-note span { color: var(--green); font-size: 12px; font-weight: 700; letter-spacing: .5px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; padding: 38px 0 22px; }
+    h2 { margin: 0; font: 500 34px var(--serif); letter-spacing: -.7px; }
+    .post-count { color: var(--muted); font-size: 13px; }
+    .posts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-bottom: 72px; }
+    .post-card { min-width: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); background: var(--surface); transition: transform .2s, box-shadow .2s; }
+    .post-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px #26341e12; }
+    .post-image { width: 100%; height: 190px; object-fit: cover; background: #e5eadc; }
+    .post-image-placeholder { height: 190px; display: grid; place-items: center; color: #8b9b7e; background: #e8ecdf; font: 58px var(--serif); }
+    .post-body { display: flex; flex: 1; flex-direction: column; padding: 22px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 12px; }
+    .tag { padding: 5px 9px; border-radius: 999px; color: var(--green); background: #edf1e8; font-size: 10px; font-weight: 700; }
+    .post-title { margin: 0; font: 500 24px/1.2 var(--serif); letter-spacing: -.3px; }
+    .post-description { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; min-height: 67px; margin: 12px 0 20px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .post-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .read-link { padding: 0; border: 0; color: var(--green); background: transparent; font-weight: 750; }
+    .state-message { grid-column: 1 / -1; padding: 48px 20px; color: var(--muted); text-align: center; background: #efede6; }
+    .footer { padding: 22px 0 30px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .overlay { position: fixed; inset: 0; z-index: 5; display: none; place-items: center; overflow-y: auto; padding: 24px; background: #17201999; }
+    .overlay.open { display: grid; }
+    .dialog { position: relative; width: min(680px, 100%); max-height: min(88vh, 900px); overflow-y: auto; background: var(--surface); box-shadow: 0 24px 80px #10171040; }
+    .dialog.auth-dialog { width: min(450px, 100%); padding: 34px; }
+    .close-button { position: sticky; z-index: 2; top: 14px; float: right; width: 36px; height: 36px; margin: 14px 14px -50px 0; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: var(--surface); font-size: 20px; }
+    .article-image { width: 100%; max-height: 320px; object-fit: cover; background: #e8ecdf; }
+    .article-content { padding: 34px clamp(22px, 7vw, 55px) 42px; }
+    .article-content h2 { margin: 10px 0 18px; font-size: clamp(32px, 6vw, 46px); line-height: 1.08; }
+    .article-description { color: #50544b; font: 17px/1.8 var(--serif); white-space: pre-wrap; }
+    .comments { margin-top: 34px; padding-top: 25px; border-top: 1px solid var(--line); }
+    .comments h3 { margin: 0 0 19px; font: 500 24px var(--serif); }
+    .comment { display: flex; justify-content: space-between; gap: 15px; padding: 15px 0; border-top: 1px solid var(--line); }
+    .comment-main { min-width: 0; }
+    .comment-meta { display: flex; flex-wrap: wrap; gap: 9px; align-items: baseline; margin-bottom: 6px; }
+    .comment-meta strong { font-size: 13px; }
+    .comment-meta time { color: var(--muted); font-size: 11px; }
+    .comment p { margin: 0; color: #50544b; font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .delete-comment { flex: 0 0 auto; align-self: start; padding: 4px; border: 0; color: #a54838; background: transparent; font-size: 11px; }
+    .comment-form { display: grid; gap: 11px; margin-top: 18px; }
+    .comment-form textarea, .field input { width: 100%; padding: 12px 13px; border: 1px solid #dcd9d0; border-radius: 2px; outline: none; background: #fff; }
+    .comment-form textarea { min-height: 95px; resize: vertical; }
+    .comment-form textarea:focus, .field input:focus { border-color: var(--green); box-shadow: 0 0 0 3px #355d451a; }
+    .comment-form .button { justify-self: start; }
+    .auth-dialog h2 { margin: 0 0 7px; font-size: 35px; }
+    .auth-intro { margin: 0 0 22px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .auth-form { display: grid; gap: 14px; }
+    .field { display: grid; gap: 7px; }
+    .field label { color: #50544b; font-size: 12px; font-weight: 700; }
+    .auth-form .button { margin-top: 5px; }
+    .auth-switch { margin: 17px 0 0; color: var(--muted); text-align: center; font-size: 12px; }
+    .auth-switch button { padding: 0; border: 0; color: var(--green); background: transparent; font-weight: 750; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 10; max-width: min(420px, calc(100% - 44px)); padding: 13px 17px; color: #fff; background: #263d2d; box-shadow: 0 8px 25px #0002; font-size: 13px; }
+    .toast.error { background: #9c3d32; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 760px) {
+      .hero { grid-template-columns: 1fr; gap: 28px; padding: 52px 0 44px; }
+      .hero-note { min-height: 165px; }
+      .posts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .post-image, .post-image-placeholder { height: 155px; }
+    }
+    @media (max-width: 520px) {
+      .shell { width: min(100% - 32px, 440px); }
+      .topbar { height: 68px; }
+      .nav-right { gap: 10px; }
+      .nav-right .button { padding: 9px 13px; font-size: 12px; }
+      .user-name { display: none; }
+      h1 { letter-spacing: -2px; }
+      .hero-copy { font-size: 15px; }
+      .posts { grid-template-columns: 1fr; }
+      .post-image, .post-image-placeholder { height: 205px; }
+      .overlay { padding: 10px; }
+      .dialog.auth-dialog { padding: 26px 22px; }
+      .article-content { padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="shell nav" aria-label="Navegación principal">
+      <a class="brand" href="/" aria-label="Cuaderno, inicio"><span class="brand-mark">C</span> cuaderno</a>
+      <div class="nav-right">
+        <span class="user-name" id="user-name"></span>
+        <button class="button secondary" id="auth-button" type="button">Iniciar sesión</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Ideas para leer sin prisa</p>
+        <h1>Historias que merecen quedarse.</h1>
+        <p class="hero-copy">Un espacio para descubrir nuevas perspectivas, compartir ideas y conversar alrededor de cada historia.</p>
+      </div>
+      <aside class="hero-note">
+        <p>“Leer es viajar sin moverse, escribir es invitar a alguien a venir.”</p>
+        <span>UN LUGAR PARA LAS IDEAS</span>
+      </aside>
+    </section>
+
+    <section aria-labelledby="posts-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">El blog</p>
+          <h2 id="posts-heading">Lecturas recientes</h2>
+        </div>
+        <span class="post-count" id="post-count"></span>
+      </div>
+      <div class="posts" id="posts" aria-live="polite">
+        <div class="state-message">Cargando publicaciones…</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="shell">Cuaderno <span aria-hidden="true">·</span> Un blog para leer y compartir.</div></footer>
+
+  <div class="overlay" id="post-overlay" role="dialog" aria-modal="true" aria-label="Publicación">
+    <article class="dialog" id="post-dialog">
+      <button class="close-button" type="button" aria-label="Cerrar" data-close="post-overlay">×</button>
+      <div id="post-detail"></div>
+    </article>
+  </div>
+
+  <div class="overlay" id="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <section class="dialog auth-dialog">
+      <button class="close-button" type="button" aria-label="Cerrar" data-close="auth-overlay">×</button>
+      <p class="eyebrow" id="auth-eyebrow">Qué bueno tenerte aquí</p>
+      <h2 id="auth-title">Bienvenido.</h2>
+      <p class="auth-intro" id="auth-intro">Inicia sesión para participar en la conversación.</p>
+      <form class="auth-form" id="auth-form">
+        <div class="field" id="name-field" hidden>
+          <label for="auth-name">Nombre</label>
+          <input id="auth-name" name="nom_usr" autocomplete="name" maxlength="100">
+        </div>
+        <div class="field">
+          <label for="auth-email">Correo electrónico</label>
+          <input id="auth-email" name="mail" type="email" autocomplete="email" required maxlength="150">
+        </div>
+        <div class="field">
+          <label for="auth-password">Contraseña</label>
+          <input id="auth-password" name="pass_" type="password" autocomplete="current-password" required minlength="1">
+        </div>
+        <div class="field" id="address-field" hidden>
+          <label for="auth-address">Dirección <span>(opcional)</span></label>
+          <input id="auth-address" name="dir_usr" autocomplete="street-address" maxlength="255">
+        </div>
+        <button class="button" id="auth-submit" type="submit">Iniciar sesión</button>
+      </form>
+      <p class="auth-switch"><span id="auth-switch-text">¿Aún no tienes cuenta?</span> <button type="button" id="auth-switch-button">Regístrate</button></p>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script>
+    (() => {
+      const postsElement = document.getElementById("posts");
+      const postCount = document.getElementById("post-count");
+      const authButton = document.getElementById("auth-button");
+      const userName = document.getElementById("user-name");
+      const authOverlay = document.getElementById("auth-overlay");
+      const postOverlay = document.getElementById("post-overlay");
+      const authForm = document.getElementById("auth-form");
+      const toastElement = document.getElementById("toast");
+      let user = readUser();
+      let authMode = "login";
+      let currentPostId = null;
+      let toastTimer;
+
+      function readUser() {
+        try {
+          const value = JSON.parse(localStorage.getItem("cuaderno-user") || "null");
+          return value && Number.isInteger(value.id_usr) && typeof value.nom_usr === "string" ? value : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[character]);
+      }
+
+      async function request(path, options = {}) {
+        let response;
+        try {
+          response = await fetch(path, {
+            ...options,
+            headers: { ...(options.body ? { "Content-Type": "application/json" } : {}), ...options.headers }
+          });
+        } catch {
+          throw new Error("No se pudo conectar con la API. Comprueba que el servidor esté activo.");
+        }
+        const contentType = response.headers.get("content-type") || "";
+        const result = contentType.includes("application/json") ? await response.json() : null;
+        if (!response.ok) {
+          const detail = result && result.detail;
+          throw new Error(typeof detail === "string" ? detail : "Ocurrió un error al procesar la solicitud.");
+        }
+        return result;
+      }
+
+      function showToast(message, isError = false) {
+        window.clearTimeout(toastTimer);
+        toastElement.textContent = message;
+        toastElement.classList.toggle("error", isError);
+        toastElement.hidden = false;
+        toastTimer = window.setTimeout(() => { toastElement.hidden = true; }, 3800);
+      }
+
+      function setUser(nextUser) {
+        user = nextUser;
+        if (user) localStorage.setItem("cuaderno-user", JSON.stringify(user));
+        else localStorage.removeItem("cuaderno-user");
+        userName.textContent = user ? `Hola, ${user.nom_usr}` : "";
+        authButton.textContent = user ? "Cerrar sesión" : "Iniciar sesión";
+      }
+
+      function openOverlay(overlay) {
+        overlay.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeOverlay(overlay) {
+        overlay.classList.remove("open");
+        if (!document.querySelector(".overlay.open")) document.body.style.overflow = "";
+      }
+
+      function imageUrl(value) {
+        if (!value) return null;
+        try {
+          const parsed = new URL(value, window.location.origin);
+          return ["http:", "https:"].includes(parsed.protocol) ? parsed.href : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function tagsMarkup(value) {
+        return String(value || "").split(",").map((tag) => tag.trim()).filter(Boolean)
+          .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
+      }
+
+      function renderPosts(posts) {
+        postCount.textContent = `${posts.length} ${posts.length === 1 ? "publicación" : "publicaciones"}`;
+        if (!posts.length) {
+          postsElement.innerHTML = '<div class="state-message">Todavía no hay publicaciones. Vuelve pronto para descubrir nuevas historias.</div>';
+          return;
+        }
+        postsElement.innerHTML = posts.map((post) => {
+          const image = imageUrl(post.img);
+          return `<article class="post-card">
+            ${image ? `<img class="post-image" src="${escapeHtml(image)}" alt="" loading="lazy">` : '<div class="post-image-placeholder" aria-hidden="true">✳</div>'}
+            <div class="post-body">
+              <div class="tags">${tagsMarkup(post.tags)}</div>
+              <h3 class="post-title">${escapeHtml(post.titulo)}</h3>
+              <p class="post-description">${escapeHtml(post.desc || "Una historia te espera. Abre la publicación para leerla.")}</p>
+              <div class="post-footer">
+                <span>Una lectura para ti</span>
+                <button class="read-link" type="button" data-post-id="${Number(post.id_blog)}">Leer historia →</button>
+              </div>
+            </div>
+          </article>`;
+        }).join("");
+      }
+
+      async function loadPosts() {
+        postsElement.innerHTML = '<div class="state-message">Cargando publicaciones…</div>';
+        try {
+          const posts = await request("/posts");
+          if (!Array.isArray(posts)) throw new Error("La API devolvió una respuesta inesperada al cargar publicaciones.");
+          renderPosts(posts);
+        } catch (error) {
+          postsElement.innerHTML = `<div class="state-message">${escapeHtml(error.message)} <br><br><button class="button secondary" type="button" id="retry-posts">Intentar de nuevo</button></div>`;
+          postCount.textContent = "";
+        }
+      }
+
+      function renderComments(comments) {
+        if (!comments.length) return '<p class="auth-intro">Aún no hay comentarios. ¡Sé la primera persona en compartir una idea!</p>';
+        return comments.map((comment) => {
+          const date = new Date(comment.fecha);
+          const dateText = Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("es", { year: "numeric", month: "short", day: "numeric" });
+          const canDelete = user && user.id_usr === comment.usr_id;
+          return `<div class="comment">
+            <div class="comment-main">
+              <div class="comment-meta"><strong>${escapeHtml(comment.nom_usr)}</strong><time>${escapeHtml(dateText)}</time></div>
+              <p>${escapeHtml(comment.comentario)}</p>
+            </div>
+            ${canDelete ? `<button class="delete-comment" type="button" data-comment-id="${Number(comment.id_com)}">Eliminar</button>` : ""}
+          </div>`;
+        }).join("");
+      }
+
+      async function openPost(id) {
+        currentPostId = id;
+        document.getElementById("post-detail").innerHTML = '<div class="state-message">Cargando publicación…</div>';
+        openOverlay(postOverlay);
+        try {
+          const post = await request(`/posts/${encodeURIComponent(id)}`);
+          const image = imageUrl(post.img);
+          const comments = Array.isArray(post.comentarios) ? post.comentarios : [];
+          document.getElementById("post-detail").innerHTML = `
+            ${image ? `<img class="article-image" src="${escapeHtml(image)}" alt="">` : ""}
+            <div class="article-content">
+              <div class="tags">${tagsMarkup(post.tags)}</div>
+              <h2>${escapeHtml(post.titulo)}</h2>
+              <div class="article-description">${escapeHtml(post.desc || "Esta publicación no tiene descripción.")}</div>
+              <section class="comments" aria-labelledby="comments-heading">
+                <h3 id="comments-heading">La conversación (${comments.length})</h3>
+                <div id="comments-list">${renderComments(comments)}</div>
+                ${user ? `<form class="comment-form" id="comment-form">
+                  <label for="comment-text"><strong>Deja tu comentario</strong></label>
+                  <textarea id="comment-text" name="comentario" maxlength="500" required placeholder="¿Qué te hizo pensar esta historia?"></textarea>
+                  <button class="button" type="submit">Publicar comentario</button>
+                </form>` : '<button class="button secondary" type="button" id="comment-signin">Inicia sesión para comentar</button>'}
+              </section>
+            </div>`;
+        } catch (error) {
+          document.getElementById("post-detail").innerHTML = `<div class="state-message">${escapeHtml(error.message)}<br><br><button class="button secondary" type="button" id="retry-post">Intentar de nuevo</button></div>`;
+        }
+      }
+
+      function setAuthMode(mode) {
+        authMode = mode;
+        const registering = mode === "register";
+        document.getElementById("auth-eyebrow").textContent = registering ? "Tu próxima historia empieza aquí" : "Qué bueno tenerte aquí";
+        document.getElementById("auth-title").textContent = registering ? "Crea tu cuenta." : "Bienvenido.";
+        document.getElementById("auth-intro").textContent = registering ? "Únete a la comunidad y comparte tus ideas." : "Inicia sesión para participar en la conversación.";
+        document.getElementById("name-field").hidden = !registering;
+        document.getElementById("address-field").hidden = !registering;
+        document.getElementById("auth-name").required = registering;
+        document.getElementById("auth-password").autocomplete = registering ? "new-password" : "current-password";
+        document.getElementById("auth-submit").textContent = registering ? "Crear cuenta" : "Iniciar sesión";
+        document.getElementById("auth-switch-text").textContent = registering ? "¿Ya tienes una cuenta?" : "¿Aún no tienes cuenta?";
+        document.getElementById("auth-switch-button").textContent = registering ? "Inicia sesión" : "Regístrate";
+        authForm.reset();
+      }
+
+      authButton.addEventListener("click", () => {
+        if (user) {
+          setUser(null);
+          showToast("Has cerrado sesión.");
+        } else {
+          setAuthMode("login");
+          openOverlay(authOverlay);
+        }
+      });
+
+      document.getElementById("auth-switch-button").addEventListener("click", () => {
+        setAuthMode(authMode === "login" ? "register" : "login");
+      });
+
+      authForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const submitButton = document.getElementById("auth-submit");
+        submitButton.disabled = true;
+        try {
+          const values = new FormData(authForm);
+          const payload = {
+            mail: values.get("mail"),
+            pass_: values.get("pass_")
+          };
+          let result;
+          if (authMode === "register") {
+            result = await request("/RegistroUsuario", {
+              method: "POST",
+              body: JSON.stringify({
+                ...payload,
+                nom_usr: values.get("nom_usr"),
+                dir_usr: values.get("dir_usr") || null,
+                tip_usu: 1
+              })
+            });
+            setUser(result);
+          } else {
+            result = await request("/Login", { method: "POST", body: JSON.stringify(payload) });
+            setUser(result.user);
+          }
+          closeOverlay(authOverlay);
+          showToast(authMode === "register" ? "Tu cuenta está lista. ¡Bienvenido!" : "Has iniciado sesión.");
+          if (currentPostId !== null && postOverlay.classList.contains("open")) await openPost(currentPostId);
+        } catch (error) {
+          showToast(error.message, true);
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      postsElement.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-post-id]");
+        if (button) openPost(button.dataset.postId);
+        if (event.target.closest("#retry-posts")) loadPosts();
+      });
+
+      document.getElementById("post-detail").addEventListener("click", async (event) => {
+        if (event.target.closest("#retry-post") && currentPostId !== null) {
+          await openPost(currentPostId);
+          return;
+        }
+        if (event.target.closest("#comment-signin")) {
+          setAuthMode("login");
+          openOverlay(authOverlay);
+          return;
+        }
+        const deleteButton = event.target.closest("[data-comment-id]");
+        if (deleteButton && user) {
+          deleteButton.disabled = true;
+          try {
+            await request(`/comentarios/${encodeURIComponent(deleteButton.dataset.commentId)}?usr_id=${encodeURIComponent(user.id_usr)}`, { method: "DELETE" });
+            showToast("Comentario eliminado.");
+            await openPost(currentPostId);
+          } catch (error) {
+            deleteButton.disabled = false;
+            showToast(error.message, true);
+          }
+        }
+      });
+
+      document.getElementById("post-detail").addEventListener("submit", async (event) => {
+        if (event.target.id !== "comment-form" || !user || currentPostId === null) return;
+        event.preventDefault();
+        const button = event.target.querySelector("button[type=submit]");
+        button.disabled = true;
+        try {
+          const text = new FormData(event.target).get("comentario").toString().trim();
+          if (!text) throw new Error("Escribe un comentario antes de publicarlo.");
+          await request("/comentarios", {
+            method: "POST",
+            body: JSON.stringify({ comentario: text, usr_id: user.id_usr, blog_id: currentPostId })
+          });
+          showToast("Tu comentario se publicó.");
+          await openPost(currentPostId);
+        } catch (error) {
+          button.disabled = false;
+          showToast(error.message, true);
+        }
+      });
+
+      document.querySelectorAll("[data-close]").forEach((button) => {
+        button.addEventListener("click", () => closeOverlay(document.getElementById(button.dataset.close)));
+      });
+      [authOverlay, postOverlay].forEach((overlay) => {
+        overlay.addEventListener("click", (event) => {
+          if (event.target === overlay) closeOverlay(overlay);
+        });
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeOverlay(authOverlay);
+          closeOverlay(postOverlay);
+        }
+      });
+
+      setUser(user);
+      loadPosts();
+    })();
+  </script>
+</body>
+</html>
