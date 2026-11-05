@@ -108,31 +108,33 @@ class _PostsScreenState extends State<PostsScreen> {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary, // Toma tu verde editorial
+                color: Theme.of(context).colorScheme.primaryContainer,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, color: Color(0xFF8A9A86)),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.secondaryContainer,
+                    child: Icon(
+                      Icons.person,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Libria App',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     widget.currentUserName,
-                    style: const TextStyle(
-                      color: Colors.white70,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                       fontSize: 14,
                     ),
                   ),

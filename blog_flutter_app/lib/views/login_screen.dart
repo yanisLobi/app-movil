@@ -28,7 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
 
     try {
       final response = await http.post(
@@ -38,7 +40,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
 
       if (response.statusCode == 200) {
         // El backend devuelve el ID del usuario autenticado dentro de "user".
@@ -72,7 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error de conexión: $e")),
       );
@@ -82,41 +88,67 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Iniciar Sesión"), foregroundColor: Colors.white),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _mailController,
-              decoration: const InputDecoration(labelText: "Correo Electrónico", border: OutlineInputBorder()),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _passController,
-              decoration: const InputDecoration(labelText: "Contraseña", border: OutlineInputBorder()),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
-                    onPressed: loginUser,
-                    child: const Text("Entrar", style: TextStyle(fontSize: 16)),
+      appBar: AppBar(
+        title: const Text("Iniciar Sesión"),
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/logo_movil.png',
+                    width: 220,
+                    height: 160,
+                    fit: BoxFit.contain,
                   ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterScreen(baseUrl: widget.baseUrl)),
-                );
-              },
-              child: const Text("¿No tienes cuenta? Regístrate aquí"),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _mailController,
+                    decoration: const InputDecoration(
+                      labelText: "Correo Electrónico",
+                      prefixIcon: Icon(Icons.email_outlined),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _passController,
+                    decoration: const InputDecoration(
+                      labelText: "Contraseña",
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 20),
+                  isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50)),
+                          onPressed: loginUser,
+                          child: const Text("Entrar",
+                              style: TextStyle(fontSize: 16)),
+                        ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                RegisterScreen(baseUrl: widget.baseUrl)),
+                      );
+                    },
+                    child: const Text("¿No tienes cuenta? Regístrate aquí"),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
