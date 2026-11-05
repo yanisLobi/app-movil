@@ -59,7 +59,6 @@ La tabla `blog` incluye los campos `tags` y `generos`; el listado y el detalle r
 ├── blog_backend/
 │   ├── database.py
 │   ├── main.py
-│   ├── requirements.txt
 │   └── static/
 │       └── index.html
 └── blog_flutter_app/
@@ -81,7 +80,6 @@ La tabla `blog` incluye los campos `tags` y `generos`; el listado y el detalle r
 
 - `blog_backend/main.py`: aplicación FastAPI, modelos SQLAlchemy, esquemas Pydantic y rutas.
 - `blog_backend/database.py`: dirección de conexión a MySQL, motor SQLAlchemy y sesiones de base de datos.
-- `blog_backend/requirements.txt`: dependencias de Python para instalar y ejecutar la API.
 - `blog_backend/static/`: contenido estático del backend.
 
 Los modelos actuales representan tres tablas:
@@ -113,7 +111,7 @@ Las rutas actuales están definidas en `blog_backend/main.py`.
 
 ### Datos principales de las solicitudes
 
-- **Registro (`/RegistroUsuario`):** `nom_usr` (texto), `mail` (texto), `pass_` (texto de al menos 8 caracteres), `dir_usr` (texto opcional) y `tip_usu` (número, por defecto `1`). La API almacena las contraseñas derivadas con PBKDF2 y una sal única; las contraseñas antiguas en texto plano se actualizan cuando su titular inicia sesión correctamente.
+- **Registro (`/RegistroUsuario`):** `nom_usr` (texto), `mail` (texto), `pass_` (texto), `dir_usr` (texto opcional) y `tip_usu` (número, por defecto `1`).
 - **Inicio de sesión (`/Login`):** `mail` y `pass_`.
 - **Crear comentario (`/comentarios`):** `comentario` (texto), `usr_id` (número) y `blog_id` (número).
 
@@ -127,21 +125,20 @@ La API devuelve los errores de validación o de búsqueda como respuestas HTTP. 
 - Un servidor MySQL disponible, con la base de datos y las tablas que usan los modelos.
 - Una dirección del backend a la que pueda acceder el dispositivo Android.
 
-**Configuración pendiente para cada entorno:** no se encontró un script de creación de tablas ni datos iniciales en `blog_backend/`. Instala las dependencias indicadas arriba y prepara la base de datos antes de iniciar la API. La conexión a MySQL se define en `blog_backend/database.py`; verifica que use tu configuración local y no publiques credenciales.
+**Configuración pendiente para cada entorno:** no se encontró un archivo de dependencias del backend, un script de creación de tablas ni datos iniciales en `blog_backend/`. Por ello, hay que preparar las dependencias y la base de datos por separado antes de iniciar la API. La conexión a MySQL se define en `blog_backend/database.py`; verifica que use tu configuración local y no publiques credenciales.
 
 ## Ejecución en desarrollo
 
 ### 1. Preparar e iniciar el backend
 
-Desde la raíz del repositorio, instala las dependencias y luego inicia el servidor:
+Una vez instalado y configurado Python, las dependencias necesarias, MySQL y sus tablas:
 
 ```powershell
 cd blog_backend
-python -m pip install -r requirements.txt
 python -m uvicorn main:app --reload
 ```
 
-Antes de iniciar la API, configura una conexión accesible a MySQL y asegúrate de que existan la base de datos y las tablas que usan los modelos. El comando usa Uvicorn para ejecutar FastAPI durante el desarrollo.
+El comando usa Uvicorn para ejecutar la aplicación FastAPI durante el desarrollo. Si Uvicorn no está disponible en el entorno Python, será necesario instalarlo junto con las dependencias del backend.
 
 ### 2. Configurar y ejecutar Flutter
 
