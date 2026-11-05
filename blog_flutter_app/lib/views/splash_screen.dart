@@ -35,11 +35,11 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Ícono decorativo acorde a Libralia / Blog
-            const Icon(
-              Icons.menu_book_rounded,
-              size: 70,
-              color: Color(0xFF8A9A86), 
+            Image.asset(
+              'assets/images/logo.png',
+              width: 100,
+              height: 100,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 20),
             const Text(
