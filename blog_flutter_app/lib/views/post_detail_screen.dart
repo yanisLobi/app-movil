@@ -123,6 +123,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(_postDetail != null ? _postDetail!['titulo'] : 'Detalle'),
       ),
@@ -199,32 +200,36 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       ),
 
 
-                      // Formulario para comentar
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _commentController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Escribe un comentario...',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: const Icon(Icons.send),
-                              color: Theme.of(context).primaryColor,
-                              onPressed: _addComment,
-                            ),
-                          ],
-                        ),
-                      )
                     ],
                   ),
                 ),
+      bottomNavigationBar: !_isLoading && _postDetail != null
+          ? SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _commentController,
+                        decoration: const InputDecoration(
+                          hintText: 'Escribe un comentario...',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      color: Theme.of(context).primaryColor,
+                      onPressed: _addComment,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 }
