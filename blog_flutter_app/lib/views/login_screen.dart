@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> loginUser() async {
     final mail = _mailController.text.trim();
-    final pass = _passController.text.trim();
+    final pass = _passController.text;
 
     if (mail.isEmpty || pass.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

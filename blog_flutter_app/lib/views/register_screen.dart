@@ -21,13 +21,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> registerUser() async {
     final name = _nameController.text.trim();
     final mail = _mailController.text.trim();
-    final pass = _passController.text.trim();
+    final pass = _passController.text;
     final dir = _dirController.text.trim();
     final tip = _tipController.text.trim();
 
     if (name.isEmpty || mail.isEmpty || pass.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Por favor llena los campos obligatorios")),
+      );
+      return;
+    }
+
+    if (pass.runes.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("La contraseña debe tener al menos 8 caracteres")),
       );
       return;
     }
@@ -78,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 12),
               TextField(controller: _mailController, decoration: const InputDecoration(labelText: "Correo Electrónico", border: OutlineInputBorder()), keyboardType: TextInputType.emailAddress),
               const SizedBox(height: 12),
-              TextField(controller: _passController, decoration: const InputDecoration(labelText: "Contraseña", border: OutlineInputBorder()), obscureText: true),
+              TextField(controller: _passController, decoration: const InputDecoration(labelText: "Contraseña", helperText: "Debe tener al menos 8 caracteres", border: OutlineInputBorder()), obscureText: true),
               const SizedBox(height: 12),
               TextField(controller: _dirController, decoration: const InputDecoration(labelText: "Dirección", border: OutlineInputBorder())),
               const SizedBox(height: 12),
