@@ -4,9 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:blog_flutter_app/views/login_screen.dart';
 import 'package:blog_flutter_app/views/posts_screen.dart';
 
 void main() {
+  testWidgets('el formulario de inicio permite desplazarse con el teclado',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(
+          viewInsets: EdgeInsets.only(bottom: 300),
+        ),
+        child: const MaterialApp(
+          home: LoginScreen(baseUrl: 'https://example.invalid'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('filtra publicaciones desde el menú por género',
       (WidgetTester tester) async {
     final client = MockClient((request) async {

@@ -1,7 +1,5 @@
 import 'package:blog_flutter_app/views/login_screen.dart';
-import 'package:blog_flutter_app/views/splash_screen.dart';
 import 'package:flutter/material.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -12,10 +10,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definimos la paleta inspirada en tu imagen de referencia
-    const Color primarySage = Color(0xFF8A9A86); // Verde salvia elegante
-    const Color darkText = Color(0xFF2C3531);    // Verde carbón / texto principal
-    const Color warmBg = Color(0xFFF4F1EA);      // Fondo crema / marfil suave
+    const Color forest = Color(0xFF344A35);
+    const Color sage = Color(0xFF71896D);
+    const Color moss = Color(0xFF8FA58A);
+    const Color paleSage = Color(0xFFD4DFD0);
+    const Color softSage = Color(0xFFE4EBE1);
+    const Color warmBg = Color(0xFFEAF0E7);
     const String baseUrl = "https://9wc8k4l0-8000.usw3.devtunnels.ms";
 
     return MaterialApp(
@@ -25,16 +25,26 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Roboto',
         colorScheme: const ColorScheme.light(
-          primary: primarySage,
-          secondary: primarySage,
-          surface: Colors.white,
-          onSurface: darkText,
+          primary: forest,
+          onPrimary: Colors.white,
+          primaryContainer: paleSage,
+          onPrimaryContainer: forest,
+          secondary: sage,
+          onSecondary: Colors.white,
+          secondaryContainer: softSage,
+          onSecondaryContainer: forest,
+          tertiary: moss,
+          onTertiary: forest,
+          tertiaryContainer: paleSage,
+          onTertiaryContainer: forest,
+          surface: Color(0xFFF1F5EF),
+          onSurface: forest,
         ),
-        scaffoldBackgroundColor: warmBg, // Fondo general crema suave
+        scaffoldBackgroundColor: warmBg,
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           elevation: 0,
-          backgroundColor: primarySage,
+          backgroundColor: sage,
           foregroundColor: Colors.white,
           titleTextStyle: TextStyle(
             fontFamily: 'Roboto',
@@ -43,16 +53,21 @@ class MyApp extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+        iconTheme: const IconThemeData(color: forest),
+        listTileTheme: const ListTileThemeData(
+          selectedColor: forest,
+          selectedTileColor: paleSage,
+        ),
         cardTheme: CardThemeData(
           elevation: 1,
-          color: Colors.white,
+          color: const Color(0xFFF1F5EF),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primarySage,
+            backgroundColor: forest,
             foregroundColor: Colors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
@@ -61,12 +76,31 @@ class MyApp extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           ),
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFF1F5EF),
+          prefixIconColor: forest,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: moss),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: forest, width: 2),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(foregroundColor: forest),
+        ),
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: darkText),
-          bodyMedium: TextStyle(color: darkText),
+          bodyLarge: TextStyle(color: forest),
+          bodyMedium: TextStyle(color: forest),
         ),
       ),
-      home: const SplashScreen(baseUrl: baseUrl),
+      home: const LoginScreen(baseUrl: baseUrl),
     );
   }
 }
