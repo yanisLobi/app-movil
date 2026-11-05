@@ -4,10 +4,12 @@ class Post {
   final String? desc;
   final String? img;
   final String? tags;
+  final String generos;
 
   Post({
     required this.idBlog,
     required this.titulo,
+    required this.generos,
     this.desc,
     this.img,
     this.tags,
@@ -21,6 +23,7 @@ class Post {
       desc: json['desc'],
       img: json['img'],
       tags: json['tags'],
+      generos: json['generos'] ?? '',
     );
   }
 }
