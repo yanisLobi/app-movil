@@ -224,19 +224,32 @@ class _PostsScreenState extends State<PostsScreen> {
                         _generoSeleccionado == null
                             ? 'No hay publicaciones.'
                             : 'No hay publicaciones de $_generoSeleccionado.',
+                        textAlign: TextAlign.center,
                       ),
                     )
                   : ListView.builder(
                       itemCount: postsVisibles.length,
                       itemBuilder: (context, index) {
                         final post = postsVisibles[index];
+                        final imageUrl = post['img']?.toString();
                         return Card(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           child: ListTile(
-                            leading: CircleAvatar(
-                              child: Text('${post['id_blog']}'),
-                            ),
+                            leading: imageUrl != null && imageUrl.trim().isNotEmpty
+                                ? Image.network(
+                                    imageUrl,
+                                    width: 64,
+                                    height: 64,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        CircleAvatar(
+                                      child: Text('${post['id_blog']}'),
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    child: Text('${post['id_blog']}'),
+                                  ),
                             title: Text(
                               post['titulo'] ?? 'Sin título',
                               style:
