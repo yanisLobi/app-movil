@@ -46,7 +46,7 @@ La tabla `blog` incluye los campos `tags` y `generos`; el listado y el detalle r
 ### Aspectos que conviene tener en cuenta
 
 - La dirección del servidor está escrita en el código Flutter y debe apuntar a una dirección accesible desde el dispositivo o emulador Android. La dirección que se usa en un entorno de desarrollo puede no funcionar en otro; no se incluye aquí porque puede ser temporal.
-- La pantalla de detalle usa actualmente el identificador de usuario `1` como valor de prueba para crear o eliminar comentarios. El flujo de inicio de sesión no pasa el identificador del usuario a esa pantalla, por lo que este comportamiento no representa todavía una sesión conectada al usuario real.
+- El inicio de sesión pasa el identificador y el nombre del usuario autenticado a la aplicación: el identificador se usa para crear o eliminar comentarios y el nombre se muestra en el menú lateral.
 - El formulario Flutter de registro envía `tip_usu` como texto cuando se deja vacío, mientras que el esquema del backend lo define como número. Si se utiliza ese campo, ambos lados deben enviar y esperar el mismo tipo.
 - La prueba de widgets verifica que el listado se filtre por género desde el menú lateral.
 

@@ -5,9 +5,15 @@ import 'dart:convert';
 import 'post_detail_screen.dart';
 
 class PostsScreen extends StatefulWidget {
-  const PostsScreen({super.key, required this.currentUserId, this.client});
+  const PostsScreen({
+    super.key,
+    required this.currentUserId,
+    required this.currentUserName,
+    this.client,
+  });
 
   final int currentUserId;
+  final String currentUserName;
   final http.Client? client;
 
   @override
@@ -106,7 +112,7 @@ class _PostsScreenState extends State<PostsScreen> {
                     .colorScheme
                     .primary, // Toma tu verde editorial
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -124,8 +130,8 @@ class _PostsScreenState extends State<PostsScreen> {
                     ),
                   ),
                   Text(
-                    'Usuario Activo',
-                    style: TextStyle(
+                    widget.currentUserName,
+                    style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
                     ),

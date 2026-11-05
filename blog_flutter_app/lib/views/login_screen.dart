@@ -47,8 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ? responseData['user']
             : null;
         final userId = user is Map<String, dynamic> ? user['id_usr'] : null;
+        final userName = user is Map<String, dynamic> ? user['nom_usr'] : null;
 
-        if (userId is! int) {
+        if (userId is! int || userName is! String || userName.trim().isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("No se pudo identificar al usuario")),
           );
@@ -58,7 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => PostsScreen(currentUserId: userId),
+            builder: (context) => PostsScreen(
+              currentUserId: userId,
+              currentUserName: userName.trim(),
+            ),
           ),
         );
       } else {

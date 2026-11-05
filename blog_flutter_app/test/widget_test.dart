@@ -31,7 +31,13 @@ void main() {
     });
 
     await tester.pumpWidget(
-      MaterialApp(home: PostsScreen(currentUserId: 1, client: client)),
+      MaterialApp(
+        home: PostsScreen(
+          currentUserId: 1,
+          currentUserName: 'Ana',
+          client: client,
+        ),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -40,6 +46,8 @@ void main() {
 
     tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
     await tester.pumpAndSettle();
+
+    expect(find.text('Ana'), findsOneWidget);
 
     const iconosPorGenero = {
       'Romance': Icons.favorite_border,
