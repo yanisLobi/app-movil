@@ -27,6 +27,16 @@ class _PostsScreenState extends State<PostsScreen> {
     'Adaptaciones Cinematográficas',
   ];
 
+  static IconData _iconoGenero(String genero) => switch (genero) {
+        'Romance' => Icons.favorite_border,
+        'Terror' => Icons.nights_stay_outlined,
+        'Fantasía' => Icons.auto_awesome_outlined,
+        'Ciencia Ficción' => Icons.science_outlined,
+        'Aventura y Acción' => Icons.hiking_outlined,
+        'Adaptaciones Cinematográficas' => Icons.movie_outlined,
+        _ => Icons.category_outlined,
+      };
+
   List<dynamic> _posts = [];
   String? _generoSeleccionado;
   bool _isLoading = true;
@@ -146,7 +156,7 @@ class _PostsScreenState extends State<PostsScreen> {
 
             ..._generos.map(
               (genero) => ListTile(
-                leading: const Icon(Icons.category_outlined),
+                leading: Icon(_iconoGenero(genero)),
                 title: Text(genero),
                 selected: _generoSeleccionado == genero,
                 onTap: () {

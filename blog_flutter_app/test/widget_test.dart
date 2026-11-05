@@ -40,6 +40,25 @@ void main() {
 
     tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
     await tester.pumpAndSettle();
+
+    const iconosPorGenero = {
+      'Romance': Icons.favorite_border,
+      'Terror': Icons.nights_stay_outlined,
+      'Fantasía': Icons.auto_awesome_outlined,
+      'Ciencia Ficción': Icons.science_outlined,
+      'Aventura y Acción': Icons.hiking_outlined,
+      'Adaptaciones Cinematográficas': Icons.movie_outlined,
+    };
+    for (final entry in iconosPorGenero.entries) {
+      expect(
+        find.descendant(
+          of: find.widgetWithText(ListTile, entry.key),
+          matching: find.byIcon(entry.value),
+        ),
+        findsOneWidget,
+      );
+    }
+
     await tester.tap(find.widgetWithText(ListTile, 'Romance'));
     await tester.pumpAndSettle();
 
