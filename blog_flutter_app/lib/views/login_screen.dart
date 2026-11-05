@@ -66,7 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Iniciar Sesión"), foregroundColor: Colors.white),
+        title: const Text("Iniciar Sesión"),
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
           child: ConstrainedBox(
