@@ -5,8 +5,9 @@ import 'dart:convert';
 import 'post_detail_screen.dart';
 
 class PostsScreen extends StatefulWidget {
-  const PostsScreen({super.key, this.client});
+  const PostsScreen({super.key, required this.currentUserId, this.client});
 
+  final int currentUserId;
   final http.Client? client;
 
   @override
@@ -247,6 +248,7 @@ class _PostsScreenState extends State<PostsScreen> {
                                   builder: (context) => PostDetailScreen(
                                     blogId: post['id_blog'],
                                     baseUrl: baseUrl,
+                                    currentUserId: widget.currentUserId,
                                   ),
                                 ),
                               ).then(

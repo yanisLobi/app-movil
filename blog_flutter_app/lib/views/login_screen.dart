@@ -37,13 +37,29 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode({"mail": mail, "pass_": pass}),
       );
 
+      if (!mounted) return;
       setState(() { isLoading = false; });
 
       if (response.statusCode == 200) {
-        // Redirigir al usuario al listado de posts si el login es exitoso
+        // El backend devuelve el ID del usuario autenticado dentro de "user".
+        final responseData = jsonDecode(response.body);
+        final user = responseData is Map<String, dynamic>
+            ? responseData['user']
+            : null;
+        final userId = user is Map<String, dynamic> ? user['id_usr'] : null;
+
+        if (userId is! int) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("No se pudo identificar al usuario")),
+          );
+          return;
+        }
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const PostsScreen()),
+          MaterialPageRoute(
+            builder: (context) => PostsScreen(currentUserId: userId),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -51,8 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() { isLoading = false; });
-      print("Error de conexión: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error de conexión: $e")),
+      );
     }
   }
 

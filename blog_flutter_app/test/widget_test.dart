@@ -31,7 +31,7 @@ void main() {
     });
 
     await tester.pumpWidget(
-      MaterialApp(home: PostsScreen(client: client)),
+      MaterialApp(home: PostsScreen(currentUserId: 1, client: client)),
     );
     await tester.pumpAndSettle();
 

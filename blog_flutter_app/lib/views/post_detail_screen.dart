@@ -6,12 +6,14 @@ import 'dart:convert';
 class PostDetailScreen extends StatefulWidget {
   final int blogId;
   final String baseUrl;
+  final int currentUserId;
 
 
   const PostDetailScreen({
     super.key,
     required this.blogId,
     required this.baseUrl,
+    required this.currentUserId,
   });
 
 
@@ -21,10 +23,6 @@ class PostDetailScreen extends StatefulWidget {
 
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
-  // Simulación del usuario autenticado actual (Ejemplo: Usuario con ID 1)
-  final int currentUserId = 1;
-
-
   Map<String, dynamic>? _postDetail;
   bool _isLoading = true;
   final TextEditingController _commentController = TextEditingController();
@@ -74,7 +72,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'comentario': text,
-          'usr_id': currentUserId,
+          'usr_id': widget.currentUserId,
           'blog_id': widget.blogId,
         }),
       );
@@ -96,7 +94,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   Future<void> _deleteComment(int commentId) async {
     try {
       final response = await http.delete(
-        Uri.parse('${widget.baseUrl}/comentarios/$commentId?usr_id=$currentUserId'),
+        Uri.parse(
+          '${widget.baseUrl}/comentarios/$commentId?usr_id=${widget.currentUserId}',
+        ),
       );
 
 
@@ -163,7 +163,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                                 itemCount: _postDetail!['comentarios'].length,
                                 itemBuilder: (context, index) {
                                   final item = _postDetail!['comentarios'][index];
-                                  final bool isMine = item['usr_id'] == currentUserId;
+                                  final bool isMine =
+                                      item['usr_id'] == widget.currentUserId;
 
 
                                   return Card(
