@@ -111,7 +111,7 @@ Las rutas actuales están definidas en `blog_backend/main.py`.
 
 ### Datos principales de las solicitudes
 
-- **Registro (`/RegistroUsuario`):** `nom_usr` (texto), `mail` (texto), `pass_` (texto), `dir_usr` (texto opcional) y `tip_usu` (número, por defecto `1`).
+- **Registro (`/RegistroUsuario`):** `nom_usr` (texto), `mail` (texto), `pass_` (texto de al menos 8 caracteres), `dir_usr` (texto opcional) y `tip_usu` (número, por defecto `1`). La API almacena las contraseñas derivadas con PBKDF2 y una sal única; las contraseñas antiguas en texto plano se actualizan cuando su titular inicia sesión correctamente.
 - **Inicio de sesión (`/Login`):** `mail` y `pass_`.
 - **Crear comentario (`/comentarios`):** `comentario` (texto), `usr_id` (número) y `blog_id` (número).
 

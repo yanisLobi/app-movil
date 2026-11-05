@@ -2,11 +2,49 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
+import hashlib
+import hmac
+import secrets
 
 from database import Base, get_db
+
+_PASSWORD_HASH_PREFIX = "pbkdf2_sha256"
+_PASSWORD_HASH_ITERATIONS = 600_000
+
+
+# Guarda una derivación no reversible con una sal aleatoria para cada contraseña.
+def hash_password(password: str) -> str:
+    salt = secrets.token_bytes(16)
+    password_hash = hashlib.pbkdf2_hmac(
+        "sha256", password.encode("utf-8"), salt, _PASSWORD_HASH_ITERATIONS
+    )
+    return f"{_PASSWORD_HASH_PREFIX}${_PASSWORD_HASH_ITERATIONS}${salt.hex()}${password_hash.hex()}"
+
+
+def verify_password(password: str, stored_hash: str) -> bool:
+    try:
+        algorithm, iterations, salt_hex, hash_hex = stored_hash.split("$")
+        salt = bytes.fromhex(salt_hex)
+        expected_hash = bytes.fromhex(hash_hex)
+    except ValueError:
+        return False
+
+    if (
+        algorithm != _PASSWORD_HASH_PREFIX
+        or iterations != str(_PASSWORD_HASH_ITERATIONS)
+        or len(salt) != 16
+        or len(expected_hash) != 32
+    ):
+        return False
+
+    actual_hash = hashlib.pbkdf2_hmac(
+        "sha256", password.encode("utf-8"), salt, _PASSWORD_HASH_ITERATIONS
+    )
+    return hmac.compare_digest(actual_hash, expected_hash)
+
 
 #============================================================
 # 1. APLICACIÓN Y CONFIGURACIÓN DE CORS
@@ -192,7 +230,7 @@ def delete_comentario(comentario_id: int, usr_id: int, db: Session = Depends(get
 class UsuarioCreate(BaseModel):
     nom_usr: str
     mail: str
-    pass_: str
+    pass_: str = Field(..., min_length=8)
     dir_usr: Optional[str] = None
     tip_usu: int = 1
 
@@ -220,7 +258,7 @@ def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     nuevo_usuario = Usuario(
         nom_usr=usuario.nom_usr,
         mail=usuario.mail,
-        pass_=usuario.pass_,
+        pass_=hash_password(usuario.pass_),
         dir_usr=usuario.dir_usr,
         tip_usu=usuario.tip_usu
     )
@@ -238,8 +276,20 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)):
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
-    # Validar contraseña
-    if usuario.pass_ != credenciales.pass_:
+    contraseña_guardada = usuario.pass_
+    if contraseña_guardada.startswith(f"{_PASSWORD_HASH_PREFIX}$"):
+        contraseña_valida = verify_password(credenciales.pass_, contraseña_guardada)
+    else:
+        contraseña_valida = hmac.compare_digest(
+            contraseña_guardada.encode("utf-8"),
+            credenciales.pass_.encode("utf-8"),
+        )
+        # Actualiza cuentas antiguas al formato seguro cuando inician sesión.
+        if contraseña_valida:
+            usuario.pass_ = hash_password(credenciales.pass_)
+            db.commit()
+
+    if not contraseña_valida:
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
     
     return {
