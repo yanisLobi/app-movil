@@ -232,36 +232,11 @@ class _PostsScreenState extends State<PostsScreen> {
                       itemBuilder: (context, index) {
                         final post = postsVisibles[index];
                         final imageUrl = post['img']?.toString();
+                        final tags = post['tags']?.toString().trim();
                         return Card(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
-                          child: ListTile(
-                            leading: imageUrl != null && imageUrl.trim().isNotEmpty
-                                ? Image.network(
-                                    imageUrl,
-                                    width: 64,
-                                    height: 64,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        CircleAvatar(
-                                      child: Text('${post['id_blog']}'),
-                                    ),
-                                  )
-                                : CircleAvatar(
-                                    child: Text('${post['id_blog']}'),
-                                  ),
-                            title: Text(
-                              post['titulo'] ?? 'Sin título',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                              '${post['generos'] ?? 'Sin género'} · ${post['desc'] ?? ''}',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing:
-                                const Icon(Icons.arrow_forward_ios, size: 16),
+                          child: InkWell(
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -272,9 +247,75 @@ class _PostsScreenState extends State<PostsScreen> {
                                     currentUserId: widget.currentUserId,
                                   ),
                                 ),
-                              ).then(
-                                  (_) => _fetchPosts()); // Recargar al volver
+                              ).then((_) => _fetchPosts());
                             },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: SizedBox(
+                                      width: 60,
+                                      child: AspectRatio(
+                                        aspectRatio: 2 / 3,
+                                        child: imageUrl != null &&
+                                                imageUrl.trim().isNotEmpty
+                                            ? Image.network(
+                                                imageUrl,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Center(
+                                                  child: CircleAvatar(
+                                                    child: Text(
+                                                        '${post['id_blog']}'),
+                                                  ),
+                                                ),
+                                              )
+                                            : Center(
+                                                child: CircleAvatar(
+                                                  child: Text(
+                                                      '${post['id_blog']}'),
+                                                ),
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          post['titulo'] ?? 'Sin título',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${post['generos'] ?? 'Sin género'} · ${post['desc'] ?? ''}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        if (tags != null && tags.isNotEmpty) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Etiquetas: $tags',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.arrow_forward_ios, size: 16),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       },
