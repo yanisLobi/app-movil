@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-import os
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, Session
 from pydantic import BaseModel, Field
@@ -52,23 +50,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
 # 1. APLICACIÓN Y CONFIGURACIÓN DE CORS
 #============================================================
 
-# Roles de usuario: 1 = lector, 2 = editor.
-# Regla del proyecto: en móvil el registro siempre es lector (1).
-# En web el usuario puede elegir lector (1) o editor (2).
-TIP_LECTOR = 1
-TIP_EDITOR = 2
-
-# Carpeta donde vive la versión web (blog_backend/static/index.html).
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 app = FastAPI(title="Blog API Integrador")
-
-
-# Versión web: sirve la página principal en la raíz.
-# Sin esto, static/index.html existía pero nadie la servía.
-@app.get("/", include_in_schema=False)
-def serve_web():
-    return FileResponse(os.path.join(_BASE_DIR, "static", "index.html"))
 
 # Configuración explicita de CORS para permitir peticiones desde Flutter
 # origins =["*"] permite conexiones desde cualquier cliente (Web, Android,i0S, Desktop)
@@ -250,9 +232,7 @@ class UsuarioCreate(BaseModel):
     mail: str
     pass_: str = Field(..., min_length=8)
     dir_usr: Optional[str] = None
-    # Solo se aceptan 1 (lector) y 2 (editor). Pydantic rechaza
-    # cualquier otro valor con 422 antes de llegar a la base de datos.
-    tip_usu: int = Field(default=TIP_LECTOR, ge=TIP_LECTOR, le=TIP_EDITOR)
+    tip_usu: int = 1
 
 class UsuarioResponse(BaseModel):
     id_usr: int
@@ -270,9 +250,6 @@ class LoginRequest(BaseModel):
 # Endpoint de Registro de Usuario
 @app.post("/RegistroUsuario", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def registrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
-    # Defensa extra por si el valor llega por otra vía: solo lector o editor.
-    if usuario.tip_usu not in (TIP_LECTOR, TIP_EDITOR):
-        raise HTTPException(status_code=400, detail="Tipo de usuario no válido. Usa 1 para lector o 2 para editor")
     # Verificar si el correo ya existe
     existe_usuario = db.query(Usuario).filter(Usuario.mail == usuario.mail).first()
     if existe_usuario:

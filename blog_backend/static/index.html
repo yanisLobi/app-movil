@@ -86,10 +86,9 @@
     .comment p { margin: 0; color: #50544b; font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
     .delete-comment { flex: 0 0 auto; align-self: start; padding: 4px; border: 0; color: #a54838; background: transparent; font-size: 11px; }
     .comment-form { display: grid; gap: 11px; margin-top: 18px; }
-    .comment-form textarea, .field input, .field select { width: 100%; padding: 12px 13px; border: 1px solid #dcd9d0; border-radius: 2px; outline: none; background: #fff; }
+    .comment-form textarea, .field input { width: 100%; padding: 12px 13px; border: 1px solid #dcd9d0; border-radius: 2px; outline: none; background: #fff; }
     .comment-form textarea { min-height: 95px; resize: vertical; }
-    .comment-form textarea:focus, .field input:focus, .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px #355d451a; }
-    .field-hint { color: var(--muted); font-size: 11px; font-weight: 400; }
+    .comment-form textarea:focus, .field input:focus { border-color: var(--green); box-shadow: 0 0 0 3px #355d451a; }
     .comment-form .button { justify-self: start; }
     .auth-dialog h2 { margin: 0 0 7px; font-size: 35px; }
     .auth-intro { margin: 0 0 22px; color: var(--muted); font-size: 13px; line-height: 1.6; }
@@ -195,14 +194,6 @@
           <label for="auth-address">Dirección <span>(opcional)</span></label>
           <input id="auth-address" name="dir_usr" autocomplete="street-address" maxlength="255">
         </div>
-        <div class="field" id="role-field" hidden>
-          <label for="auth-role">Tipo de cuenta</label>
-          <select id="auth-role" name="tip_usu">
-            <option value="1" selected>Lector — lee publicaciones y comenta</option>
-            <option value="2">Editor — lector, con permisos para editar en la versión web</option>
-          </select>
-          <span class="field-hint">Solo en web puedes elegir. En móvil el registro siempre es Lector.</span>
-        </div>
         <button class="button" id="auth-submit" type="submit">Iniciar sesión</button>
       </form>
       <p class="auth-switch"><span id="auth-switch-text">¿Aún no tienes cuenta?</span> <button type="button" id="auth-switch-button">Regístrate</button></p>
@@ -272,8 +263,7 @@
         user = nextUser;
         if (user) localStorage.setItem("cuaderno-user", JSON.stringify(user));
         else localStorage.removeItem("cuaderno-user");
-        // Muestra el rol guardado en el backend (1 = Lector, 2 = Editor).
-        userName.textContent = user ? `Hola, ${user.nom_usr}${user.tip_usu === 2 ? " · Editor" : user.tip_usu === 1 ? " · Lector" : ""}` : "";
+        userName.textContent = user ? `Hola, ${user.nom_usr}` : "";
         authButton.textContent = user ? "Cerrar sesión" : "Iniciar sesión";
       }
 
@@ -390,8 +380,6 @@
         document.getElementById("auth-intro").textContent = registering ? "Únete a la comunidad y comparte tus ideas." : "Inicia sesión para participar en la conversación.";
         document.getElementById("name-field").hidden = !registering;
         document.getElementById("address-field").hidden = !registering;
-        // El selector de rol solo aparece al registrarse, y solo existe en web.
-        document.getElementById("role-field").hidden = !registering;
         document.getElementById("auth-name").required = registering;
         document.getElementById("auth-password").autocomplete = registering ? "new-password" : "current-password";
         document.getElementById("auth-submit").textContent = registering ? "Crear cuenta" : "Iniciar sesión";
@@ -432,9 +420,7 @@
                 ...payload,
                 nom_usr: values.get("nom_usr"),
                 dir_usr: values.get("dir_usr") || null,
-                // En web el usuario elige: 1 = lector, 2 = editor.
-                // Number() es necesario porque el <select> devuelve texto.
-                tip_usu: Number(values.get("tip_usu") || 1)
+                tip_usu: 1
               })
             });
             setUser(result);
