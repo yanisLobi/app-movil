@@ -15,7 +15,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _mailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _dirController = TextEditingController();
-  final TextEditingController _tipController = TextEditingController();
+  // En móvil no hay selector de rol: el registro siempre es lector (tip_usu = 1).
+  // Para registrarse como editor hay que usar la versión web.
   bool isLoading = false;
 
   Future<void> registerUser() async {
@@ -23,7 +24,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final mail = _mailController.text.trim();
     final pass = _passController.text;
     final dir = _dirController.text.trim();
-    final tip = _tipController.text.trim();
 
     if (name.isEmpty || mail.isEmpty || pass.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,7 +50,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "mail": mail,
           "pass_": pass,
           "dir_usr": dir,
-          "tip_usu": tip.isEmpty ? "usuario" : tip,
+          // Antes se enviaba un texto ("usuario"), pero el backend espera
+          // un número. En móvil siempre es 1 = lector.
+          "tip_usu": 1,
         }),
       );
 
@@ -89,7 +91,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 12),
               TextField(controller: _dirController, decoration: const InputDecoration(labelText: "Dirección", border: OutlineInputBorder())),
               const SizedBox(height: 12),
-              TextField(controller: _tipController, decoration: const InputDecoration(labelText: "Tipo de Usuario", border: OutlineInputBorder())),
+              const Text(
+                "Te registrarás como Lector. Para registrarte como Editor, usa la versión web.",
+                style: TextStyle(fontSize: 13),
+              ),
               const SizedBox(height: 20),
               isLoading
                   ? const CircularProgressIndicator()

@@ -1,6 +1,6 @@
 # Blog de reseñas de libros y adaptaciones cinematográficas
 
-Proyecto de clase de Desarrollo de Software para crear una aplicación móvil donde los lectores puedan consultar publicaciones de reseñas y participar con comentarios. El repositorio reúne una aplicación Android hecha con Flutter y una API REST hecha con FastAPI, conectada a una base de datos MySQL mediante SQLAlchemy.
+Proyecto de clase de Desarrollo de Software para crear una aplicación móvil donde los lectores puedan consultar publicaciones de reseñas y participar con comentarios. El repositorio reúne una aplicación Android hecha con Flutter, una versión web servida por el propio backend (`blog_backend/static/index.html`, disponible en `GET /`) y una API REST hecha con FastAPI, conectada a una base de datos MySQL mediante SQLAlchemy.
 
 ## Objetivo del proyecto
 
@@ -13,6 +13,17 @@ El objetivo es ofrecer una experiencia móvil sencilla para:
 - Facilitar la navegación por categorías y adaptar la interfaz a dispositivos Android.
 
 La navegación por categorías forma parte del objetivo planteado para el proyecto, pero no se encontró implementada en las pantallas ni en las rutas actuales de la API. Este README distingue ese objetivo de las funciones que sí se observan en el código.
+
+### Roles de usuario (`tip_usu`)
+
+| `tip_usu` | Rol | Dónde se puede elegir |
+|---|---|---|
+| `1` | Lector | Móvil y web (valor por defecto) |
+| `2` | Editor | Solo web |
+
+- **Móvil (Flutter):** el registro siempre envía `tip_usu: 1`. No hay selector de rol en la pantalla de registro; el texto de la pantalla lo indica.
+- **Web (`static/index.html`):** al registrarse aparece el campo “Tipo de cuenta” con Lector o Editor, y se envía el valor elegido como número.
+- **Backend:** `POST /RegistroUsuario` solo acepta `1` o `2`. Cualquier otro valor se rechaza (422 por validación de Pydantic). Todavía no hay endpoints distintos por rol: el rol se guarda y se muestra junto al nombre, pero crear/editar publicaciones aún no está implementado en la API.
 
 ## Tecnologías
 
@@ -47,7 +58,7 @@ La tabla `blog` incluye los campos `tags` y `generos`; el listado y el detalle r
 
 - La dirección del servidor está escrita en el código Flutter y debe apuntar a una dirección accesible desde el dispositivo o emulador Android. La dirección que se usa en un entorno de desarrollo puede no funcionar en otro; no se incluye aquí porque puede ser temporal.
 - El inicio de sesión pasa el identificador y el nombre del usuario autenticado a la aplicación: el identificador se usa para crear o eliminar comentarios y el nombre se muestra en el menú lateral.
-- El formulario Flutter de registro envía `tip_usu` como texto cuando se deja vacío, mientras que el esquema del backend lo define como número. Si se utiliza ese campo, ambos lados deben enviar y esperar el mismo tipo.
+- El registro envía `tip_usu` como número en ambos clientes: Flutter envía siempre `1` y la web envía el valor elegido en el selector (`1` o `2`).
 - La prueba de widgets verifica que el listado se filtre por género desde el menú lateral.
 
 ## Estructura del repositorio
@@ -102,6 +113,7 @@ Las rutas actuales están definidas en `blog_backend/main.py`.
 
 | Método | Ruta | Función |
 |---|---|---|
+| `GET` | `/` | Servir la versión web (`static/index.html`). |
 | `GET` | `/posts` | Obtener las publicaciones, incluido el campo `generos`. |
 | `GET` | `/posts/{blog_id}` | Obtener el detalle de una publicación (incluido `generos`) y sus comentarios activos. |
 | `POST` | `/comentarios` | Crear un comentario. |
@@ -111,7 +123,7 @@ Las rutas actuales están definidas en `blog_backend/main.py`.
 
 ### Datos principales de las solicitudes
 
-- **Registro (`/RegistroUsuario`):** `nom_usr` (texto), `mail` (texto), `pass_` (texto de al menos 8 caracteres), `dir_usr` (texto opcional) y `tip_usu` (número, por defecto `1`). La API almacena las contraseñas derivadas con PBKDF2 y una sal única; las contraseñas antiguas en texto plano se actualizan cuando su titular inicia sesión correctamente.
+- **Registro (`/RegistroUsuario`):** `nom_usr` (texto), `mail` (texto), `pass_` (texto de al menos 8 caracteres), `dir_usr` (texto opcional) y `tip_usu` (número, `1` = lector o `2` = editor, por defecto `1`). La API almacena las contraseñas derivadas con PBKDF2 y una sal única; las contraseñas antiguas en texto plano se actualizan cuando su titular inicia sesión correctamente.
 - **Inicio de sesión (`/Login`):** `mail` y `pass_`.
 - **Crear comentario (`/comentarios`):** `comentario` (texto), `usr_id` (número) y `blog_id` (número).
 
